@@ -4,9 +4,9 @@ import requests
 app = Flask(__name__)
 
 # Replace with your own tokens
-REFRESH_TOKEN = "YOUR_REFRESH_TOKEN"
-CLIENT_ID = "YOUR_CLIENT_ID"
-CLIENT_SECRET = "YOUR_CLIENT_SECRET"
+REFRESH_TOKEN = "1//04zEPCFweUXjPCgYIARAAGAQSNwF-L9IrTZDqG7TmmOro-Q-LGUo0rhe68VY9X0pRwkLvr9fcDyGe0HcHrTYImVndadywmzp4s3k"
+CLIENT_ID = "6489984974-22850tkegehk476pviiv3i5sc8fqu759.apps.googleusercontent.com"
+CLIENT_SECRET = "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"
 CALENDAR_ID = "primary"  # or full calendar email
 
 def get_access_token():
