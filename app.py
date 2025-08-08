@@ -5,13 +5,17 @@ import os
 
 app = Flask(__name__)
 
-# --- OAuth2 Credentials ---
+# --- Your OAuth2 Credentials ---
 CLIENT_ID = "6489984974-22850tkegehk476pviiv3i5sc8fqu759.apps.googleusercontent.com"
 CLIENT_SECRET = "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"
 REFRESH_TOKEN = "1//04zEPCFweUXjPCgYIARAAGAQSNwF-L9IrTZDqG7TmmOro-Q-LGUo0rhe68VY9X0pRwkLvr9fcDyGe0HcHrTYImVndadywmzp4s3k"
 
-# Your calendar ID. "primary" = main calendar
-CALENDAR_ID = "primary"
+# Calendar IDs to fetch from
+CALENDAR_IDS = [
+    "primary",
+    "addressbook#contacts@group.v.calendar.google.com",   # Birthdays
+    "en.bangladesh#holiday@group.v.calendar.google.com"   # Public Holidays (Bangladesh)
+]
 
 def get_access_token():
     token_url = "https://oauth2.googleapis.com/token"
@@ -26,9 +30,9 @@ def get_access_token():
     response.raise_for_status()
     return response.json()["access_token"]
 
-def get_upcoming_events(access_token, max_results=5):
+def get_upcoming_events(access_token, calendar_id, max_results=20):
     now = datetime.datetime.utcnow().isoformat() + "Z"  # UTC time
-    url = f"https://www.googleapis.com/calendar/v3/calendars/{CALENDAR_ID}/events"
+    url = f"https://www.googleapis.com/calendar/v3/calendars/{calendar_id}/events"
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
@@ -61,8 +65,16 @@ def index():
 def events():
     try:
         access_token = get_access_token()
-        events = get_upcoming_events(access_token)
-        return jsonify(events)
+        all_events = []
+
+        for cal_id in CALENDAR_IDS:
+            events = get_upcoming_events(access_token, cal_id)
+            all_events.extend(events)
+
+        # Sort all events by start date/time
+        all_events.sort(key=lambda e: e["start"])
+
+        return jsonify(all_events)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
