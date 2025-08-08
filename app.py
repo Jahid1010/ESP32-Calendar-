@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import requests
 import datetime
 import os
+from urllib.parse import quote
 
 app = Flask(__name__)
 
@@ -32,7 +33,8 @@ def get_access_token():
 
 def get_upcoming_events(access_token, calendar_id, max_results=20):
     now = datetime.datetime.utcnow().isoformat() + "Z"  # UTC time
-    url = f"https://www.googleapis.com/calendar/v3/calendars/{calendar_id}/events"
+    encoded_calendar_id = quote(calendar_id, safe='')   # Encode special characters!
+    url = f"https://www.googleapis.com/calendar/v3/calendars/{encoded_calendar_id}/events"
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
